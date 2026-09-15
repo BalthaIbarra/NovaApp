@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nova Tech — Catálogo en tabla</title>
+  <link rel="stylesheet" href="estilos.css">
+</head>
+<body>
+
+  <!-- Encabezado: barra de utilidad, marca, buscador y navegacion (igual en las 6 paginas) -->
+  <header class="site-header">
+    <div class="utility-bar">
+      <div class="utility-bar-inner">
+        <span>Envíos a todo el país</span>
+      </div>
+    </div>
+    <div class="header-main">
+      <div class="header-main-inner">
+        <a href="index.html" class="brand">
+          <span class="brand-mark">N</span>
+          NOVA <span class="accent">TECH</span>
+        </a>
+        <div class="search-bar">
+          <span class="search-icon">🔍</span>
+          <input type="text" placeholder="Buscar auriculares, teclados, cargadores...">
+        </div>
+        <div class="header-actions">
+          <a href="login.html" class="header-action">👤 Iniciar sesión</a>
+          <a href="comprar.html" class="header-action cart">🛒 Carrito</a>
+        </div>
+      </div>
+    </div>
+    <nav class="navbar">
+      <div class="navbar-inner">
+        <a href="index.html">Inicio</a>
+        <div class="nav-item">
+          <a href="listado_box.html" class="active">Catálogo ▾</a>
+          <div class="dropdown-menu">
+            <a href="listado_box.html">Vista en tarjetas</a>
+            <a href="listado_tabla.html">Vista en tabla</a>
+          </div>
+        </div>
+        <a href="producto.html">Producto destacado</a>
+        <a href="comprar.html">Comprar</a>
+      </div>
+    </nav>
+  </header>
+
+  <main class="page-shell">
+
+    <div class="section-heading">
+      <div>
+        <span class="eyebrow">Catálogo completo</span>
+        <h1>Listado de productos</h1>
+      </div>
+    </div>
+
+    <!-- Catalogo filtrable por categoria: ver filtro CSS en estilos.css (usa :target) -->
+    <section aria-label="Catálogo de productos en tabla">
+
+    <span id="audio"></span>
+    <span id="perifericos"></span>
+    <span id="carga"></span>
+    <span id="accesorios"></span>
+
+    <nav class="filter-tabs">
+      <a href="#" class="tab-todos">Todos</a>
+      <a href="#audio" class="tab-audio">Audio</a>
+      <a href="#perifericos" class="tab-perifericos">Periféricos</a>
+      <a href="#carga" class="tab-carga">Carga</a>
+      <a href="#accesorios" class="tab-accesorios">Accesorios</a>
+    </nav>
+
+    <div class="table-wrap">
+      <table class="catalog">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Categoría</th>
+            <th>Precio</th>
+            <th>Stock</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="cat-row cat-audio">
+            <td class="name">Auriculares Bluetooth NovaSound X1</td>
+            <td>Audio</td>
+            <td class="price">$ 45.999</td>
+            <td><span class="stock-pill">25 unidades</span></td>
+          </tr>
+          <tr class="cat-row cat-carga">
+            <td class="name">Cargador Rápido GaN NovaCharge 65W</td>
+            <td>Carga</td>
+            <td class="price">$ 18.500</td>
+            <td><span class="stock-pill">40 unidades</span></td>
+          </tr>
+          <tr class="cat-row cat-perifericos">
+            <td class="name">Teclado Mecánico NovaKey RGB</td>
+            <td>Periféricos</td>
+            <td class="price">$ 52.000</td>
+            <td><span class="stock-pill">15 unidades</span></td>
+          </tr>
+          <tr class="cat-row cat-perifericos">
+            <td class="name">Mouse Inalámbrico NovaClick Pro</td>
+            <td>Periféricos</td>
+            <td class="price">$ 22.300</td>
+            <td><span class="stock-pill">30 unidades</span></td>
+          </tr>
+          <tr class="cat-row cat-audio">
+            <td class="name">Parlante Portátil NovaBoom Mini</td>
+            <td>Audio</td>
+            <td class="price">$ 31.200</td>
+            <td><span class="stock-pill">18 unidades</span></td>
+          </tr>
+          <tr class="cat-row cat-carga">
+            <td class="name">Power Bank NovaCharge 20000mAh</td>
+            <td>Carga</td>
+            <td class="price">$ 27.800</td>
+            <td><span class="stock-pill low">8 unidades</span></td>
+          </tr>
+          <tr class="cat-row cat-audio">
+            <td class="name">Auriculares In-Ear NovaBuds Air</td>
+            <td>Audio</td>
+            <td class="price">$ 28.900</td>
+            <td><span class="stock-pill">35 unidades</span></td>
+          </tr>
+          <tr class="cat-row cat-accesorios">
+            <td class="name">Hub USB-C NovaHub 7-en-1</td>
+            <td>Accesorios</td>
+            <td class="price">$ 19.900</td>
+            <td><span class="stock-pill low">12 unidades</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    </section>
+
+  </main>
+
+  <!-- Pie de pagina -->
+  <footer class="site-footer">
+    <span class="accent">NOVA TECH</span> · Accesorios tecnológicos para tu día a día
+  </footer>
+
+</body>
+</html>

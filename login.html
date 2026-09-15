@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nova Tech — Iniciar sesión</title>
+  <link rel="stylesheet" href="estilos.css">
+</head>
+<body>
+
+  <!-- Encabezado: barra de utilidad, marca, buscador y navegacion (igual en las 6 paginas) -->
+  <header class="site-header">
+    <div class="utility-bar">
+      <div class="utility-bar-inner">
+        <span>Envíos a todo el país</span>
+      </div>
+    </div>
+    <div class="header-main">
+      <div class="header-main-inner">
+        <a href="index.html" class="brand">
+          <span class="brand-mark">N</span>
+          NOVA <span class="accent">TECH</span>
+        </a>
+        <div class="search-bar">
+          <span class="search-icon">🔍</span>
+          <input type="text" placeholder="Buscar auriculares, teclados, cargadores...">
+        </div>
+        <div class="header-actions">
+          <a href="login.html" class="header-action">👤 Iniciar sesión</a>
+          <a href="comprar.html" class="header-action cart">🛒 Carrito</a>
+        </div>
+      </div>
+    </div>
+    <nav class="navbar">
+      <div class="navbar-inner">
+        <a href="index.html">Inicio</a>
+        <div class="nav-item">
+          <a href="listado_box.html">Catálogo ▾</a>
+          <div class="dropdown-menu">
+            <a href="listado_box.html">Vista en tarjetas</a>
+            <a href="listado_tabla.html">Vista en tabla</a>
+          </div>
+        </div>
+        <a href="producto.html">Producto destacado</a>
+        <a href="comprar.html">Comprar</a>
+      </div>
+    </nav>
+  </header>
+
+  <main class="page-shell">
+
+    <!-- Acceso simulado: no valida credenciales, solo redirige a comprar.html -->
+    <section aria-label="Formulario de acceso">
+      <div class="form-shell login-shell">
+        <span class="eyebrow">Acceso de clientes</span>
+        <h1>Iniciar sesión</h1>
+        <p>
+          Para completar una compra en Nova Tech necesitás iniciar sesión con tu cuenta.
+          Ingresá tus datos para continuar.
+        </p>
+
+        <form>
+          <div class="form-field full">
+            <label for="login_email">Email</label>
+            <input type="email" id="login_email" name="login_email" placeholder="nombre@correo.com">
+          </div>
+
+          <div class="form-field full">
+            <label for="login_password">Contraseña</label>
+            <input type="password" id="login_password" name="login_password" placeholder="••••••••">
+          </div>
+
+          <a href="comprar.html" class="btn btn-primary btn-block">Iniciar sesión</a>
+        </form>
+
+        <p class="login-footer-note">
+          ¿No tenés cuenta? <a href="login.html">Registrate</a>
+        </p>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Pie de pagina -->
+  <footer class="site-footer">
+    <span class="accent">NOVA TECH</span> · Accesorios tecnológicos para tu día a día
+  </footer>
+
+</body>
+</html>

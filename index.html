@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nova Tech — Accesorios tecnológicos</title>
+  <link rel="stylesheet" href="estilos.css">
+</head>
+<body>
+
+  <!-- Encabezado: barra de utilidad, marca, buscador y navegacion (igual en las 6 paginas) -->
+  <header class="site-header">
+    <div class="utility-bar">
+      <div class="utility-bar-inner">
+        <span>Envíos a todo el país</span>
+      </div>
+    </div>
+    <div class="header-main">
+      <div class="header-main-inner">
+        <a href="index.html" class="brand">
+          <span class="brand-mark">N</span>
+          NOVA <span class="accent">TECH</span>
+        </a>
+        <div class="search-bar">
+          <span class="search-icon">🔍</span>
+          <input type="text" placeholder="Buscar auriculares, teclados, cargadores...">
+        </div>
+        <div class="header-actions">
+          <a href="login.html" class="header-action">👤 Iniciar sesión</a>
+          <a href="comprar.html" class="header-action cart">🛒 Carrito</a>
+        </div>
+      </div>
+    </div>
+    <nav class="navbar">
+      <div class="navbar-inner">
+        <a href="index.html" class="active">Inicio</a>
+        <div class="nav-item">
+          <a href="listado_box.html">Catálogo ▾</a>
+          <div class="dropdown-menu">
+            <a href="listado_box.html">Vista en tarjetas</a>
+            <a href="listado_tabla.html">Vista en tabla</a>
+          </div>
+        </div>
+        <a href="producto.html">Producto destacado</a>
+        <a href="comprar.html">Comprar</a>
+      </div>
+    </nav>
+  </header>
+
+  <main class="page-shell">
+
+    <section class="hero">
+      <div>
+        <span class="eyebrow">Tienda de accesorios tech</span>
+        <h1>Bienvenido a <span class="mono">Nova Tech</span>.</h1>
+        <p class="lead">
+          Somos una tienda especializada en accesorios tecnológicos: auriculares,
+          cargadores, teclados, mouse y parlantes portátiles. Trabajamos con marcas
+          seleccionadas, garantía oficial en todos nuestros productos y envíos a
+          todo el país.
+        </p>
+        <div class="hero-actions">
+          <a href="listado_box.html" class="btn btn-primary">Ver catálogo</a>
+          <a href="producto.html" class="btn btn-outline">Producto destacado</a>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <img src="https://images.unsplash.com/photo-1550009158-9ebf69173e03?w=700&q=80&auto=format&fit=crop" alt="Accesorios tecnológicos Nova Tech">
+      </div>
+    </section>
+
+    <!-- Metricas de confianza de la tienda -->
+    <section aria-label="Estadísticas de la tienda">
+      <div class="stat-strip">
+        <div class="stat-box">
+          <div class="num">+120</div>
+          <div class="label">productos activos</div>
+        </div>
+        <div class="stat-box">
+          <div class="num">4.8★</div>
+          <div class="label">valoración promedio</div>
+        </div>
+        <div class="stat-box">
+          <div class="num">24hs</div>
+          <div class="label">despacho express</div>
+        </div>
+        <div class="stat-box">
+          <div class="num">12m</div>
+          <div class="label">garantía oficial</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Producto destacado: enlaza a la ficha completa en producto.html -->
+    <section aria-labelledby="heading-destacado">
+      <div class="section-heading">
+        <h2 id="heading-destacado">Producto destacado</h2>
+        <a href="producto.html" class="tag mono">Ver ficha completa →</a>
+      </div>
+
+      <article class="featured-card">
+        <img src="https://images.unsplash.com/photo-1585298723682-7115561c51b7?w=500&q=80&auto=format&fit=crop" alt="Auriculares Bluetooth NovaSound X1">
+        <div>
+          <span class="badge">Más vendido</span>
+          <h3>Auriculares Bluetooth NovaSound X1</h3>
+          <p>
+            Cancelación de ruido activa, 40 horas de batería y sonido de alta fidelidad
+            en un diseño plegable de aluminio cepillado. El punto de partida ideal
+            para tu setup Nova Tech.
+          </p>
+          <div class="price">$ 45.999</div>
+          <a href="producto.html" class="btn btn-primary">Ver detalle del producto</a>
+        </div>
+      </article>
+    </section>
+
+    <!-- Accesos por categoria: cada banner enlaza al catalogo ya filtrado -->
+    <section aria-labelledby="heading-categorias">
+      <div class="section-heading">
+        <h2 id="heading-categorias">Explorá por categoría</h2>
+      </div>
+
+      <a href="listado_box.html#perifericos" class="promo-banner">
+        <div class="promo-text">
+          <span class="eyebrow">Periféricos</span>
+          <h3>Los mejores periféricos, al mejor precio, acá.</h3>
+          <p>Teclados mecánicos y mouse inalámbricos pensados para largas horas de uso, gaming o trabajo.</p>
+          <span class="btn btn-primary" style="width:fit-content;">Explorar periféricos</span>
+        </div>
+        <div class="promo-image">
+          <img src="https://images.unsplash.com/photo-1618384887929-16ec33fab9ef?w=700&q=75&auto=format&fit=crop" alt="Periféricos Nova Tech">
+        </div>
+      </a>
+
+      <a href="listado_box.html#audio" class="promo-banner">
+        <div class="promo-text">
+          <span class="eyebrow">Audio</span>
+          <h3>Auriculares y parlantes que suenan distinto.</h3>
+          <p>Cancelación de ruido, batería de larga duración y sonido de alta fidelidad para donde vayas.</p>
+          <span class="btn btn-primary" style="width:fit-content;">Explorar audio</span>
+        </div>
+        <div class="promo-image">
+          <img src="https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=700&q=75&auto=format&fit=crop" alt="Audio Nova Tech">
+        </div>
+      </a>
+
+      <a href="listado_box.html#carga" class="promo-banner">
+        <div class="promo-text">
+          <span class="eyebrow">Carga</span>
+          <h3>Nunca te quedes sin batería.</h3>
+          <p>Cargadores GaN de carga rápida y power banks de alta capacidad para tu día a día.</p>
+          <span class="btn btn-primary" style="width:fit-content;">Explorar carga</span>
+        </div>
+        <div class="promo-image">
+          <img src="https://images.unsplash.com/photo-1583863788434-e58a36330cf0?w=700&q=75&auto=format&fit=crop" alt="Carga Nova Tech">
+        </div>
+      </a>
+
+      <a href="listado_box.html#accesorios" class="promo-banner">
+        <div class="promo-text">
+          <span class="eyebrow">Accesorios</span>
+          <h3>Accesorios que completan tu setup.</h3>
+          <p>Hubs y conectores para sacarle el máximo provecho a tu notebook o PC de escritorio.</p>
+          <span class="btn btn-primary" style="width:fit-content;">Explorar accesorios</span>
+        </div>
+        <div class="promo-image">
+          <img src="images/novahub-usbc.jpg" alt="Accesorios Nova Tech">
+        </div>
+      </a>
+    </section>
+
+  </main>
+
+  <!-- Pie de pagina -->
+  <footer class="site-footer">
+    <span class="accent">NOVA TECH</span> · Accesorios tecnológicos para tu día a día
+  </footer>
+
+</body>
+</html>
