@@ -1108,6 +1108,18 @@ fieldset legend {
   margin: 64px auto 0;
 }
 
+.registro-view {
+  display: none;
+}
+
+#registro:target ~ .login-view {
+  display: none;
+}
+
+#registro:target ~ .registro-view {
+  display: block;
+}
+
 .login-footer-note {
   text-align: center;
   margin-top: 18px;
@@ -1118,6 +1130,37 @@ fieldset legend {
 .login-footer-note a {
   color: var(--accent-cyan);
   font-weight: 600;
+}
+
+.form-feedback {
+  min-height: 1.2em;
+  margin: 4px 0 20px;
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 0.86rem;
+  font-weight: 500;
+}
+
+.form-feedback:empty {
+  display: none;
+}
+
+.form-feedback.pendiente {
+  background: rgba(154, 157, 189, 0.12);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-strong);
+}
+
+.form-feedback.exito {
+  background: rgba(0, 217, 224, 0.12);
+  color: var(--accent-cyan);
+  border: 1px solid rgba(0, 217, 224, 0.35);
+}
+
+.form-feedback.error {
+  background: rgba(255, 107, 107, 0.12);
+  color: #ff8f8f;
+  border: 1px solid rgba(255, 107, 107, 0.35);
 }
 
 .site-footer {

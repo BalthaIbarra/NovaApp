@@ -49,8 +49,10 @@
 
   <main class="page-shell">
 
-    <!-- Acceso simulado: no valida credenciales, solo redirige a comprar.html -->
-    <section aria-label="Formulario de acceso">
+    <!-- Acceso/registro: alterna vista sin JS via :target (mismo patron que los modales de comprar.html) -->
+    <span id="registro"></span>
+
+    <section aria-label="Formulario de acceso" class="login-view">
       <div class="form-shell login-shell">
         <span class="eyebrow">Acceso de clientes</span>
         <h1>Iniciar sesión</h1>
@@ -59,22 +61,62 @@
           Ingresá tus datos para continuar.
         </p>
 
-        <form>
+        <!-- Login: valida contra data/usuarios.json vía fetch (app.js), sin campo de confirmacion -->
+        <form id="loginForm">
           <div class="form-field full">
             <label for="login_email">Email</label>
-            <input type="email" id="login_email" name="login_email" placeholder="nombre@correo.com">
+            <input type="email" id="login_email" name="login_email" placeholder="nombre@correo.com" required>
           </div>
 
           <div class="form-field full">
             <label for="login_password">Contraseña</label>
-            <input type="password" id="login_password" name="login_password" placeholder="••••••••">
+            <input type="password" id="login_password" name="login_password" placeholder="••••••••" required>
           </div>
 
-          <a href="comprar.html" class="btn btn-primary btn-block">Iniciar sesión</a>
+          <!-- Mensaje de resultado (éxito/error) inyectado por app.js, sin recargar la página -->
+          <div id="login-feedback" class="form-feedback" aria-live="polite"></div>
+
+          <button type="submit" class="btn btn-primary btn-block">Iniciar sesión</button>
         </form>
 
         <p class="login-footer-note">
-          ¿No tenés cuenta? <a href="login.html">Registrate</a>
+          ¿No tenés cuenta? <a href="#registro">Registrate</a>
+        </p>
+      </div>
+    </section>
+
+    <section aria-label="Formulario de registro" class="registro-view">
+      <div class="form-shell login-shell">
+        <span class="eyebrow">Cuenta nueva</span>
+        <h1>Crear cuenta</h1>
+        <p>
+          Registrate en Nova Tech con tu email y una contraseña para poder comprar.
+        </p>
+
+        <!-- Registro: aca si se pide confirmar contraseña (coincidencia + longitud minima) -->
+        <form id="registroForm">
+          <div class="form-field full">
+            <label for="registro_email">Email</label>
+            <input type="email" id="registro_email" name="registro_email" placeholder="nombre@correo.com" required>
+          </div>
+
+          <div class="form-field full">
+            <label for="registro_password">Contraseña</label>
+            <input type="password" id="registro_password" name="registro_password" placeholder="••••••••" required>
+          </div>
+
+          <div class="form-field full">
+            <label for="registro_password_confirm">Confirmar contraseña</label>
+            <input type="password" id="registro_password_confirm" name="registro_password_confirm" placeholder="••••••••" required>
+          </div>
+
+          <div id="registro-feedback" class="form-feedback" aria-live="polite"></div>
+
+          <button type="submit" class="btn btn-primary btn-block">Crear cuenta</button>
+        </form>
+
+        <p class="login-footer-note">
+          ¿Ya tenés cuenta? <a href="login.html">Iniciar sesión</a>
         </p>
       </div>
     </section>
@@ -85,6 +127,9 @@
   <footer class="site-footer">
     <span class="accent">NOVA TECH</span> · Accesorios tecnológicos para tu día a día
   </footer>
+
+  <!-- JS del sitio (Entrega 2): login/registro desacoplados con fetch() y buscador del header (ver app.js) -->
+  <script src="app.js" defer></script>
 
 </body>
 </html>

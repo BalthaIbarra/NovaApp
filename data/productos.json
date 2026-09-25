@@ -1,0 +1,83 @@
+[
+  {
+    "id": "novasound-x1",
+    "nombre": "Auriculares Bluetooth NovaSound X1",
+    "categoria": "Audio",
+    "categoriaSlug": "audio",
+    "precioTexto": "$ 45.999",
+    "stock": 25,
+    "stockBajo": false,
+    "imagen": "https://images.unsplash.com/photo-1585298723682-7115561c51b7?w=500&q=75&auto=format&fit=crop",
+    "detalle": true
+  },
+  {
+    "id": "novacharge-65w",
+    "nombre": "Cargador Rápido GaN NovaCharge 65W",
+    "categoria": "Carga",
+    "categoriaSlug": "carga",
+    "precioTexto": "$ 18.500",
+    "stock": 40,
+    "stockBajo": false,
+    "imagen": "https://images.unsplash.com/photo-1583863788434-e58a36330cf0?w=500&q=75&auto=format&fit=crop"
+  },
+  {
+    "id": "novakey-rgb",
+    "nombre": "Teclado Mecánico NovaKey RGB",
+    "categoria": "Periféricos",
+    "categoriaSlug": "perifericos",
+    "precioTexto": "$ 52.000",
+    "stock": 15,
+    "stockBajo": false,
+    "imagen": "https://images.unsplash.com/photo-1618384887929-16ec33fab9ef?w=500&q=75&auto=format&fit=crop"
+  },
+  {
+    "id": "novaclick-pro",
+    "nombre": "Mouse Inalámbrico NovaClick Pro",
+    "categoria": "Periféricos",
+    "categoriaSlug": "perifericos",
+    "precioTexto": "$ 22.300",
+    "stock": 30,
+    "stockBajo": false,
+    "imagen": "https://images.unsplash.com/photo-1615663245857-ac93bb7c39e7?w=500&q=75&auto=format&fit=crop"
+  },
+  {
+    "id": "novaboom-mini",
+    "nombre": "Parlante Portátil NovaBoom Mini",
+    "categoria": "Audio",
+    "categoriaSlug": "audio",
+    "precioTexto": "$ 31.200",
+    "stock": 18,
+    "stockBajo": false,
+    "imagen": "https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=500&q=75&auto=format&fit=crop"
+  },
+  {
+    "id": "novacharge-20k",
+    "nombre": "Power Bank NovaCharge 20000mAh",
+    "categoria": "Carga",
+    "categoriaSlug": "carga",
+    "precioTexto": "$ 27.800",
+    "stock": 8,
+    "stockBajo": true,
+    "imagen": "https://images.unsplash.com/photo-1609091839311-d5365f9ff1c5?w=500&q=75&auto=format&fit=crop"
+  },
+  {
+    "id": "novabuds-air",
+    "nombre": "Auriculares In-Ear NovaBuds Air",
+    "categoria": "Audio",
+    "categoriaSlug": "audio",
+    "precioTexto": "$ 28.900",
+    "stock": 35,
+    "stockBajo": false,
+    "imagen": "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=500&q=75&auto=format&fit=crop"
+  },
+  {
+    "id": "novahub-7",
+    "nombre": "Hub USB-C NovaHub 7-en-1",
+    "categoria": "Accesorios",
+    "categoriaSlug": "accesorios",
+    "precioTexto": "$ 19.900",
+    "stock": 12,
+    "stockBajo": true,
+    "imagen": "images/novahub-usbc.jpg"
+  }
+]
