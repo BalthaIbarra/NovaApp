@@ -4,10 +4,10 @@
 const LONGITUD_MINIMA_CLAVE = 8;
 
 document.addEventListener('DOMContentLoaded', () => {
-  const formLogin = document.getElementById('loginForm');
+  const formLogin = document.querySelector('#loginForm');
   if (formLogin) formLogin.addEventListener('submit', manejarEnvioLogin);
 
-  const formRegistro = document.getElementById('registroForm');
+  const formRegistro = document.querySelector('#registroForm');
   if (formRegistro) formRegistro.addEventListener('submit', manejarEnvioRegistro);
 
   inicializarBuscador();
@@ -16,9 +16,9 @@ document.addEventListener('DOMContentLoaded', () => {
 async function manejarEnvioLogin(evento) {
   evento.preventDefault();
 
-  const email = document.getElementById('login_email').value.trim();
-  const clave = document.getElementById('login_password').value;
-  const feedback = document.getElementById('login-feedback');
+  const email = document.querySelector('#login_email').value.trim();
+  const clave = document.querySelector('#login_password').value;
+  const feedback = document.querySelector('#login-feedback');
 
   mostrarFeedback(feedback, 'Verificando credenciales...', 'pendiente');
 
@@ -44,10 +44,10 @@ async function manejarEnvioLogin(evento) {
 async function manejarEnvioRegistro(evento) {
   evento.preventDefault();
 
-  const email = document.getElementById('registro_email').value.trim();
-  const clave = document.getElementById('registro_password').value;
-  const claveConfirmacion = document.getElementById('registro_password_confirm').value;
-  const feedback = document.getElementById('registro-feedback');
+  const email = document.querySelector('#registro_email').value.trim();
+  const clave = document.querySelector('#registro_password').value;
+  const claveConfirmacion = document.querySelector('#registro_password_confirm').value;
+  const feedback = document.querySelector('#registro-feedback');
 
   if (clave.length < LONGITUD_MINIMA_CLAVE) {
     mostrarFeedback(feedback, `La contraseña debe tener al menos ${LONGITUD_MINIMA_CLAVE} caracteres.`, 'error');
@@ -81,6 +81,9 @@ async function manejarEnvioRegistro(evento) {
 
 async function obtenerUsuarios() {
   const respuesta = await fetch('data/usuarios.json');
+  if (!respuesta.ok) {
+    throw new Error(`Respuesta HTTP ${respuesta.status}`);
+  }
   return respuesta.json();
 }
 
@@ -103,7 +106,6 @@ async function inicializarBuscador() {
   const hayCatalogoEnEstaPagina = grilla || cuerpoTabla;
 
   if (!hayCatalogoEnEstaPagina) {
-    // En el resto de las páginas, Enter manda al catálogo con el término buscado.
     input.addEventListener('keydown', (evento) => {
       if (evento.key !== 'Enter') return;
       evento.preventDefault();
@@ -113,22 +115,34 @@ async function inicializarBuscador() {
   }
 
   try {
-    const respuesta = await fetch('data/productos.json');
-    catalogoCompleto = await respuesta.json();
+    catalogoCompleto = await obtenerProductos();
   } catch (error) {
-    return; // Si falla el fetch, se conserva el catálogo estático ya presente en el HTML.
+    mostrarErrorCatalogo(grilla, cuerpoTabla);
+    return;
   }
 
   const parametros = new URLSearchParams(window.location.search);
   const terminoInicial = parametros.get('q') || '';
   input.value = terminoInicial;
-  renderizarCatalogo(catalogoCompleto, grilla, cuerpoTabla);
-  if (terminoInicial) filtrarYRenderizar(terminoInicial, grilla, cuerpoTabla);
+  filtrarYRenderizar(terminoInicial, grilla, cuerpoTabla);
 
-  // Filtro en tiempo real: se dispara en cada caracter tipeado (evento 'input').
   input.addEventListener('input', () => {
     filtrarYRenderizar(input.value, grilla, cuerpoTabla);
   });
+}
+
+async function obtenerProductos() {
+  const respuesta = await fetch('data/productos.json');
+  if (!respuesta.ok) {
+    throw new Error(`Respuesta HTTP ${respuesta.status}`);
+  }
+  return respuesta.json();
+}
+
+function mostrarErrorCatalogo(grilla, cuerpoTabla) {
+  const mensaje = '<p class="form-feedback error">No se pudo cargar el catálogo. Intentá recargar la página.</p>';
+  if (grilla) grilla.innerHTML = mensaje;
+  if (cuerpoTabla) cuerpoTabla.innerHTML = `<tr><td colspan="4">${mensaje}</td></tr>`;
 }
 
 function filtrarYRenderizar(termino, grilla, cuerpoTabla) {
