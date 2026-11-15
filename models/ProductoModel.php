@@ -163,11 +163,19 @@ class ProductoModel
         return $consulta->rowCount() > 0;
     }
 
-    /** Descuenta stock al confirmar un pedido (lo usa PedidoModel). */
-    public function descontarStock(int $id, int $cantidad): void
+    /**
+     * Descuenta stock al confirmar un pedido (lo usa PedidoModel).
+     * El "stock >= cantidad" va en el mismo UPDATE para que dos compras
+     * simultáneas no dejen el stock en negativo. Devuelve false si no alcanzó.
+     */
+    public function descontarStock(int $id, int $cantidad): bool
     {
-        $consulta = $this->pdo->prepare('UPDATE productos SET stock = stock - :cantidad WHERE id = :id');
-        $consulta->execute([':cantidad' => $cantidad, ':id' => $id]);
+        $consulta = $this->pdo->prepare(
+            'UPDATE productos SET stock = stock - :cantidad_a WHERE id = :id AND stock >= :cantidad_b'
+        );
+        $consulta->execute([':cantidad_a' => $cantidad, ':id' => $id, ':cantidad_b' => $cantidad]);
+
+        return $consulta->rowCount() > 0;
     }
 
     private function decodificarEspecificaciones(array $fila): array
