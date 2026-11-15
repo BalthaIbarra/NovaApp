@@ -34,8 +34,8 @@ class UsuarioModel
      */
     public function buscarPorEmail(string $email): ?array
     {
-        $consulta = $this->pdo->prepare('SELECT * FROM usuarios WHERE email = ?');
-        $consulta->execute([$email]);
+        $consulta = $this->pdo->prepare('SELECT * FROM usuarios WHERE email = :email');
+        $consulta->execute([':email' => $email]);
         $fila = $consulta->fetch();
 
         return $fila ?: null;
@@ -49,9 +49,9 @@ class UsuarioModel
     public function buscarPorId(int $id): ?array
     {
         $consulta = $this->pdo->prepare(
-            'SELECT id, nombre, email, rol, fecha_registro FROM usuarios WHERE id = ?'
+            'SELECT id, nombre, email, rol, fecha_registro FROM usuarios WHERE id = :id'
         );
-        $consulta->execute([$id]);
+        $consulta->execute([':id' => $id]);
         $fila = $consulta->fetch();
 
         return $fila ?: null;
@@ -63,8 +63,8 @@ class UsuarioModel
      */
     public function existeEmail(string $email): bool
     {
-        $consulta = $this->pdo->prepare('SELECT 1 FROM usuarios WHERE email = ?');
-        $consulta->execute([$email]);
+        $consulta = $this->pdo->prepare('SELECT 1 FROM usuarios WHERE email = :email');
+        $consulta->execute([':email' => $email]);
 
         return (bool) $consulta->fetch();
     }
@@ -78,9 +78,15 @@ class UsuarioModel
     public function crear(string $nombre, string $email, string $passwordHash, string $rol = 'cliente'): int
     {
         $consulta = $this->pdo->prepare(
-            'INSERT INTO usuarios (nombre, email, password_hash, rol) VALUES (?, ?, ?, ?)'
+            'INSERT INTO usuarios (nombre, email, password_hash, rol)
+             VALUES (:nombre, :email, :password_hash, :rol)'
         );
-        $consulta->execute([$nombre, $email, $passwordHash, $rol]);
+        $consulta->execute([
+            ':nombre'        => $nombre,
+            ':email'         => $email,
+            ':password_hash' => $passwordHash,
+            ':rol'           => $rol,
+        ]);
 
         return (int) $this->pdo->lastInsertId();
     }

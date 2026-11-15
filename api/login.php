@@ -28,8 +28,14 @@ if ($email === '' || $password === '') {
     error_api('Faltan el email o la contraseña.', 400);
 }
 
-$usuarios = new UsuarioModel();
-$usuario  = $usuarios->buscarPorEmail($email);
+try {
+    $usuarios = new UsuarioModel();
+    $usuario  = $usuarios->buscarPorEmail($email);
+} catch (PDOException $excepcion) {
+    // El detalle (SQL, rutas del servidor) va solo al log de PHP, nunca al cliente.
+    error_log('api/login.php: ' . $excepcion->getMessage());
+    error_api('Ocurrió un error interno. Intentá de nuevo más tarde.', 500);
+}
 
 // Damos el mismo mensaje si falla el email o la contraseña, para no
 // revelar con una respuesta distinta qué emails están registrados.

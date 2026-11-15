@@ -17,6 +17,11 @@ require_once __DIR__ . '/_ayudante.php';
 
 requerir_metodo('GET');
 
-$usuario = requerir_login();
+try {
+    $usuario = requerir_login();
+} catch (PDOException $excepcion) {
+    error_log('api/yo.php: ' . $excepcion->getMessage());
+    error_api('Ocurrió un error interno. Intentá de nuevo más tarde.', 500);
+}
 
 responder(['exito' => true, 'usuario' => $usuario]);

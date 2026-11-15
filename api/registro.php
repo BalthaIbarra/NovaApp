@@ -46,17 +46,28 @@ if ($password !== $passwordConfirma) {
     error_api('Las contraseñas no coinciden.', 400);
 }
 
-$usuarios = new UsuarioModel();
+try {
+    $usuarios = new UsuarioModel();
 
-if ($usuarios->existeEmail($email)) {
-    error_api('Ya existe una cuenta registrada con ese email.', 409);
+    if ($usuarios->existeEmail($email)) {
+        error_api('Ya existe una cuenta registrada con ese email.', 409);
+    }
+
+    // password_hash() genera el "salt" solo y lo guarda adentro del mismo
+    // hash; nunca se guarda la contraseña en texto plano en ningún lado.
+    $passwordHash = password_hash($password, PASSWORD_BCRYPT);
+
+    $usuarios->crear($nombre, $email, $passwordHash);
+} catch (PDOException $excepcion) {
+    // 23000 = email duplicado por la UNIQUE (dos registros simultáneos que
+    // pasaron los dos el existeEmail de arriba).
+    if ($excepcion->getCode() === '23000') {
+        error_api('Ya existe una cuenta registrada con ese email.', 409);
+    }
+
+    error_log('api/registro.php: ' . $excepcion->getMessage());
+    error_api('Ocurrió un error interno. Intentá de nuevo más tarde.', 500);
 }
-
-// password_hash() genera el "salt" solo y lo guarda adentro del mismo
-// hash; nunca se guarda la contraseña en texto plano en ningún lado.
-$passwordHash = password_hash($password, PASSWORD_BCRYPT);
-
-$usuarios->crear($nombre, $email, $passwordHash);
 
 responder([
     'exito'   => true,
