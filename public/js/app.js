@@ -18,6 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
   inicializarBuscador();
   inicializarCheckout();
   inicializarDetalle();
+  inicializarAdmin();
 });
 
 // Llama a un endpoint y devuelve { ok, status, datos }. Si se pasa "cuerpo",
@@ -66,6 +67,14 @@ async function inicializarSesion() {
   botonSalir.addEventListener('click', cerrarSesion);
 
   enlaceLogin.replaceWith(nombre, botonSalir);
+
+  // El enlace al panel solo se agrega para el rol admin.
+  const menu = document.querySelector('.navbar-inner');
+  if (usuario.rol === 'admin' && menu) {
+    const enlaceAdmin = crearEnlace('admin.html', '', 'Administración');
+    if (document.querySelector('#productoForm')) enlaceAdmin.className = 'active';
+    menu.append(enlaceAdmin);
+  }
 }
 
 async function cerrarSesion() {
@@ -621,4 +630,199 @@ async function inicializarDetalle() {
 
   mostrarEstado(estado, '');
   ficha.hidden = false;
+}
+
+// Panel de administración (CU 6: gestionar productos). Alta (POST), edición
+// (PUT) y baja (DELETE) contra api/productos.php. Mostrarlo solo a admins es
+// una ayuda visual: el servidor rechaza con 401/403 a cualquier otro.
+let productoEditandoId = null;
+
+async function inicializarAdmin() {
+  const form = document.querySelector('#productoForm');
+  if (!form) return;
+
+  const estado = document.querySelector('#admin-estado');
+  const usuario = await obtenerUsuarioActual();
+
+  if (!usuario) {
+    window.location.href = 'login.html';
+    return;
+  }
+  if (usuario.rol !== 'admin') {
+    mostrarEstado(estado, 'Esta sección es solo para administradores.', true);
+    return;
+  }
+
+  mostrarEstado(estado, '');
+  document.querySelector('#admin-panel').hidden = false;
+
+  form.addEventListener('submit', guardarProducto);
+  document.querySelector('#btn-cancelar-edicion').addEventListener('click', limpiarFormularioProducto);
+
+  await cargarListaAdmin();
+}
+
+async function cargarListaAdmin() {
+  const feedback = document.querySelector('#admin-lista-feedback');
+
+  try {
+    const productos = await obtenerProductos();
+    document.querySelector('#admin-tbody').replaceChildren(...productos.map(crearFilaAdmin));
+  } catch (error) {
+    mostrarFeedback(feedback, 'No se pudo cargar la lista de productos.', 'error');
+  }
+}
+
+function crearFilaAdmin(producto) {
+  const botonEditar = crearElemento('button', 'btn btn-outline btn-chico', 'Editar');
+  botonEditar.type = 'button';
+  botonEditar.setAttribute('aria-label', `Editar ${producto.nombre}`);
+  botonEditar.addEventListener('click', () => editarProducto(producto.id));
+
+  const botonEliminar = crearElemento('button', 'btn btn-outline btn-chico', 'Eliminar');
+  botonEliminar.type = 'button';
+  botonEliminar.setAttribute('aria-label', `Eliminar ${producto.nombre}`);
+  botonEliminar.addEventListener('click', () => eliminarProducto(producto));
+
+  const acciones = crearElemento('div', 'acciones-fila');
+  acciones.append(botonEditar, botonEliminar);
+  const celdaAcciones = document.createElement('td');
+  celdaAcciones.append(acciones);
+
+  const fila = document.createElement('tr');
+  fila.append(
+    crearElemento('td', 'name', producto.nombre),
+    crearElemento('td', '', producto.categoria),
+    crearElemento('td', 'price', formatearPrecio(producto.precio)),
+    crearElemento('td', '', String(producto.stock)),
+    crearElemento('td', '', producto.destacado ? 'Sí' : 'No'),
+    celdaAcciones
+  );
+  return fila;
+}
+
+async function editarProducto(id) {
+  const feedback = document.querySelector('#admin-form-feedback');
+
+  // La lista no trae descripción ni especificaciones: se pide la ficha completa.
+  try {
+    const { ok, datos } = await llamarApi(`productos.php?id=${id}`);
+    if (!ok) {
+      mostrarFeedback(feedback, datos.mensaje, 'error');
+      return;
+    }
+
+    const p = datos.producto;
+    productoEditandoId = p.id;
+
+    document.querySelector('#prod_nombre').value = p.nombre;
+    document.querySelector('#prod_categoria').value = p.categoria_slug;
+    document.querySelector('#prod_slug').value = p.slug;
+    document.querySelector('#prod_slug').disabled = true;
+    document.querySelector('#prod_precio').value = p.precio;
+    document.querySelector('#prod_stock').value = p.stock;
+    document.querySelector('#prod_imagen').value = p.imagen;
+    document.querySelector('#prod_descripcion').value = p.descripcion || '';
+    document.querySelector('#prod_especificaciones').value = Object.entries(p.especificaciones || {})
+      .map(([clave, valor]) => `${clave}: ${valor}`)
+      .join('\n');
+    document.querySelector('#prod_destacado').checked = p.destacado;
+
+    document.querySelector('#titulo-form').textContent = `Editar: ${p.nombre}`;
+    document.querySelector('#btn-guardar').textContent = 'Guardar cambios';
+    document.querySelector('#btn-cancelar-edicion').hidden = false;
+    mostrarFeedback(feedback, '', '');
+
+    // El formulario está arriba de la tabla: se lleva el foco hasta ahí.
+    document.querySelector('#titulo-form').focus();
+  } catch (error) {
+    mostrarFeedback(feedback, 'No se pudo cargar el producto.', 'error');
+  }
+}
+
+function limpiarFormularioProducto() {
+  productoEditandoId = null;
+  document.querySelector('#productoForm').reset();
+  document.querySelector('#prod_slug').disabled = false;
+  document.querySelector('#titulo-form').textContent = 'Nuevo producto';
+  document.querySelector('#btn-guardar').textContent = 'Crear producto';
+  document.querySelector('#btn-cancelar-edicion').hidden = true;
+}
+
+// "Batería: 40 horas\nPeso: 254 g" -> { "Batería": "40 horas", "Peso": "254 g" }
+function leerEspecificaciones(texto) {
+  const especificaciones = {};
+
+  for (const linea of texto.split('\n').map((l) => l.trim()).filter(Boolean)) {
+    const separador = linea.indexOf(':');
+    if (separador < 1) {
+      throw new Error(`La línea "${linea}" no tiene el formato Clave: Valor.`);
+    }
+    especificaciones[linea.slice(0, separador).trim()] = linea.slice(separador + 1).trim();
+  }
+  return especificaciones;
+}
+
+async function guardarProducto(evento) {
+  evento.preventDefault();
+  const feedback = document.querySelector('#admin-form-feedback');
+
+  let especificaciones;
+  try {
+    especificaciones = leerEspecificaciones(document.querySelector('#prod_especificaciones').value);
+  } catch (error) {
+    mostrarFeedback(feedback, error.message, 'error');
+    return;
+  }
+
+  const cuerpo = {
+    nombre: document.querySelector('#prod_nombre').value.trim(),
+    categoria_slug: document.querySelector('#prod_categoria').value,
+    precio: Number(document.querySelector('#prod_precio').value),
+    stock: Number(document.querySelector('#prod_stock').value),
+    imagen: document.querySelector('#prod_imagen').value.trim(),
+    descripcion: document.querySelector('#prod_descripcion').value.trim(),
+    especificaciones,
+    destacado: document.querySelector('#prod_destacado').checked,
+  };
+
+  const editando = productoEditandoId !== null;
+  if (!editando) cuerpo.slug = document.querySelector('#prod_slug').value.trim();
+
+  mostrarFeedback(feedback, 'Guardando...', 'pendiente');
+
+  try {
+    const { ok, datos } = editando
+      ? await llamarApi(`productos.php?id=${productoEditandoId}`, cuerpo, 'PUT')
+      : await llamarApi('productos.php', cuerpo);
+
+    if (!ok) {
+      mostrarFeedback(feedback, datos.mensaje, 'error');
+      return;
+    }
+
+    limpiarFormularioProducto();
+    mostrarFeedback(feedback, datos.mensaje, 'exito');
+    await cargarListaAdmin();
+  } catch (error) {
+    mostrarFeedback(feedback, 'No se pudo conectar con el servidor. Intentá nuevamente.', 'error');
+  }
+}
+
+async function eliminarProducto(producto) {
+  const feedback = document.querySelector('#admin-lista-feedback');
+
+  if (!window.confirm(`¿Eliminar "${producto.nombre}"? Esta acción no se puede deshacer.`)) return;
+
+  try {
+    const { ok, datos } = await llamarApi(`productos.php?id=${producto.id}`, {}, 'DELETE');
+    mostrarFeedback(feedback, datos.mensaje, ok ? 'exito' : 'error');
+
+    if (ok) {
+      if (productoEditandoId === producto.id) limpiarFormularioProducto();
+      await cargarListaAdmin();
+    }
+  } catch (error) {
+    mostrarFeedback(feedback, 'No se pudo conectar con el servidor. Intentá nuevamente.', 'error');
+  }
 }

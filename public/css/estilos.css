@@ -1425,3 +1425,45 @@ main:focus {
 .skip-link:focus {
   transform: translateY(0);
 }
+
+/* ============================================================
+   Panel de administración (AE4, CU 6)
+   ============================================================ */
+
+.admin-seccion {
+  margin-top: 40px;
+}
+
+.admin-seccion h2 {
+  margin-bottom: 16px;
+}
+
+.admin-acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.form-check {
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+}
+
+.form-check input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  flex: none;
+  accent-color: var(--accent-cyan);
+}
+
+.acciones-fila {
+  display: flex;
+  gap: 8px;
+}
+
+.btn-chico {
+  padding: 6px 12px;
+  font-size: 0.8rem;
+}

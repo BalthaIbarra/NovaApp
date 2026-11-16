@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nova Tech — Administración</title>
+  <link rel="stylesheet" href="css/estilos.css">
+</head>
+<body>
+
+  <!-- Primer elemento enfocable: permite saltear el header con el teclado -->
+  <a class="skip-link" href="#contenido">Saltar al contenido principal</a>
+
+  <!-- Encabezado: barra de utilidad, marca, buscador y navegacion (igual en todas las paginas) -->
+  <header class="site-header">
+    <div class="utility-bar">
+      <div class="utility-bar-inner">
+        <span>Envíos a todo el país</span>
+      </div>
+    </div>
+    <div class="header-main">
+      <div class="header-main-inner">
+        <a href="index.html" class="brand">
+          <span class="brand-mark">N</span>
+          NOVA <span class="accent">TECH</span>
+        </a>
+        <div class="search-bar" role="search">
+          <span class="search-icon" aria-hidden="true">🔍</span>
+          <input type="search" id="buscador" name="q" aria-label="Buscar productos" placeholder="Buscar auriculares, teclados, cargadores...">
+        </div>
+        <div class="header-actions">
+          <a href="login.html" class="header-action">👤 Iniciar sesión</a>
+          <a href="comprar.html" class="header-action cart">🛒 Carrito</a>
+        </div>
+      </div>
+    </div>
+    <nav class="navbar">
+      <div class="navbar-inner">
+        <a href="index.html">Inicio</a>
+        <div class="nav-item">
+          <a href="listado_box.html">Catálogo ▾</a>
+          <div class="dropdown-menu">
+            <a href="listado_box.html">Vista en tarjetas</a>
+            <a href="listado_tabla.html">Vista en tabla</a>
+          </div>
+        </div>
+        <a href="producto.html">Producto destacado</a>
+        <a href="comprar.html">Comprar</a>
+      </div>
+    </nav>
+  </header>
+
+  <main class="page-shell" id="contenido" tabindex="-1">
+
+    <div class="section-heading">
+      <div>
+        <span class="eyebrow">Administración</span>
+        <h1>Gestión de productos</h1>
+      </div>
+    </div>
+
+    <!-- Panel del CU 6. app.js solo lo muestra si el usuario es admin; igual la
+         protección real está en el servidor (api/productos.php responde 401/403). -->
+    <p id="admin-estado" class="catalogo-estado" role="status" aria-live="polite">Verificando permisos...</p>
+
+    <div id="admin-panel" hidden>
+
+      <section class="form-shell" aria-labelledby="titulo-form">
+        <h2 id="titulo-form" tabindex="-1">Nuevo producto</h2>
+
+        <form id="productoForm">
+          <div class="form-grid">
+            <div class="form-field full">
+              <label for="prod_nombre">Nombre</label>
+              <input type="text" id="prod_nombre" name="nombre" maxlength="150" required>
+            </div>
+
+            <div class="form-field">
+              <label for="prod_categoria">Categoría</label>
+              <select id="prod_categoria" name="categoria_slug" required>
+                <option value="">Seleccioná una categoría</option>
+                <option value="audio">Audio</option>
+                <option value="carga">Carga</option>
+                <option value="perifericos">Periféricos</option>
+                <option value="accesorios">Accesorios</option>
+              </select>
+            </div>
+
+            <div class="form-field">
+              <label for="prod_slug">Identificador (slug)</label>
+              <input type="text" id="prod_slug" name="slug" maxlength="60" pattern="[a-z0-9]+(-[a-z0-9]+)*" aria-describedby="ayuda-slug">
+              <p class="form-note" id="ayuda-slug">Opcional. Si lo dejás vacío se arma con el nombre. No se puede cambiar después.</p>
+            </div>
+
+            <div class="form-field">
+              <label for="prod_precio">Precio</label>
+              <input type="number" id="prod_precio" name="precio" min="0.01" step="0.01" required>
+            </div>
+
+            <div class="form-field">
+              <label for="prod_stock">Stock</label>
+              <input type="number" id="prod_stock" name="stock" min="0" step="1" required>
+            </div>
+
+            <div class="form-field full">
+              <label for="prod_imagen">Imagen</label>
+              <input type="text" id="prod_imagen" name="imagen" maxlength="255" required aria-describedby="ayuda-imagen">
+              <p class="form-note" id="ayuda-imagen">Una URL https:// o una ruta dentro de images/ (ej. images/novahub-usbc.jpg).</p>
+            </div>
+
+            <div class="form-field full">
+              <label for="prod_descripcion">Descripción</label>
+              <textarea id="prod_descripcion" name="descripcion" rows="3"></textarea>
+            </div>
+
+            <div class="form-field full">
+              <label for="prod_especificaciones">Especificaciones</label>
+              <textarea id="prod_especificaciones" name="especificaciones" rows="4" aria-describedby="ayuda-especificaciones"></textarea>
+              <p class="form-note" id="ayuda-especificaciones">Opcional. Una por línea, con el formato Clave: Valor (ej. Batería: 40 horas).</p>
+            </div>
+
+            <div class="form-field full form-check">
+              <input type="checkbox" id="prod_destacado" name="destacado">
+              <label for="prod_destacado">Producto destacado (se muestra en la portada)</label>
+            </div>
+          </div>
+
+          <div id="admin-form-feedback" class="form-feedback" aria-live="polite"></div>
+
+          <div class="admin-acciones">
+            <button type="submit" class="btn btn-primary" id="btn-guardar">Crear producto</button>
+            <button type="button" class="btn btn-outline" id="btn-cancelar-edicion" hidden>Cancelar edición</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="admin-seccion" aria-labelledby="titulo-lista">
+        <h2 id="titulo-lista">Productos cargados</h2>
+        <div id="admin-lista-feedback" class="form-feedback" aria-live="polite"></div>
+
+        <div class="table-wrap">
+          <table class="catalog">
+            <thead>
+              <tr>
+                <th scope="col">Nombre</th>
+                <th scope="col">Categoría</th>
+                <th scope="col">Precio</th>
+                <th scope="col">Stock</th>
+                <th scope="col">Destacado</th>
+                <th scope="col">Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="admin-tbody"></tbody>
+          </table>
+        </div>
+      </section>
+
+    </div>
+
+  </main>
+
+  <!-- Pie de pagina -->
+  <footer class="site-footer">
+    <span class="accent">NOVA TECH</span> · Accesorios tecnológicos para tu día a día
+  </footer>
+
+  <!-- JS del sitio: panel de administración contra la API (ver app.js) -->
+  <script src="js/app.js" defer></script>
+
+</body>
+</html>
