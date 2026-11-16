@@ -888,6 +888,9 @@ fieldset legend {
 .modal-overlay:target {
   opacity: 1;
   visibility: visible;
+  /* Al abrir, visibility cambia al instante (sin transición) para que app.js
+     pueda pasarle el foco al modal; al cerrar se mantiene el fundido. */
+  transition: opacity 0.2s ease;
 }
 
 .modal-card {
