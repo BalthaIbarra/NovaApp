@@ -83,7 +83,7 @@ function atender_alta(PedidoModel $pedidos, int $usuarioId): void
         'direccion'      => texto_obligatorio($entrada, 'direccion', 'la dirección', 255),
         'telefono'       => texto_obligatorio($entrada, 'telefono', 'el teléfono', 50),
         'email'          => texto_obligatorio($entrada, 'email', 'el email', 150),
-        'medio_pago'     => (string) ($entrada['medio_pago'] ?? ''),
+        'medio_pago'     => texto($entrada, 'medio_pago'),
     ];
 
     if (!filter_var($datosCliente['email'], FILTER_VALIDATE_EMAIL)) {
@@ -148,7 +148,7 @@ function leer_id(): int
 
 function texto_obligatorio(array $entrada, string $campo, string $descripcion, int $largoMaximo): string
 {
-    $valor = trim((string) ($entrada[$campo] ?? ''));
+    $valor = texto($entrada, $campo);
 
     if ($valor === '' || mb_strlen($valor) > $largoMaximo) {
         error_api("Falta $descripcion o es demasiado largo (máximo $largoMaximo caracteres).", 400);

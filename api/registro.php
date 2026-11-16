@@ -25,10 +25,10 @@ const LONGITUD_MINIMA_CLAVE = 8;
 requerir_metodo('POST');
 
 $datos            = leer_json();
-$nombre           = trim($datos['nombre'] ?? '');
-$email            = trim($datos['email'] ?? '');
-$password         = (string) ($datos['password'] ?? '');
-$passwordConfirma = (string) ($datos['password_confirm'] ?? '');
+$nombre           = texto($datos, 'nombre');
+$email            = texto($datos, 'email');
+$password         = texto($datos, 'password', false);
+$passwordConfirma = texto($datos, 'password_confirm', false);
 
 if ($nombre === '' || $email === '' || $password === '') {
     error_api('Faltan datos obligatorios (nombre, email o contraseña).', 400);

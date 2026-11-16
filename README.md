@@ -160,8 +160,15 @@ mensaje genérico; el detalle solo se registra en el log de PHP.
 - **Control de acceso y sesiones (A01 / A07):** `session_start()` + `$_SESSION`
   en el servidor, `session_regenerate_id(true)` tras el login, cookie `HttpOnly`
   y `SameSite=Lax`. Sin sesión → 401; sin rol admin → 403.
+- **CSRF:** los endpoints que reciben datos exigen `Content-Type: application/json`
+  (un formulario de otro sitio no puede enviarlo) y la cookie es `SameSite=Lax`.
+- **Validación de entrada:** todo campo se valida en el servidor; si llega un
+  tipo inesperado (por ejemplo un array en lugar de texto) se responde 400.
 - **Configuración (A05):** `.htaccess` bloquea el acceso web a `config/`,
-  `models/`, `sql/` y `.git/`.
+  `models/`, `sql/` y `.git/`, y envía cabeceras de seguridad: una
+  *Content Security Policy* que solo permite scripts y estilos propios,
+  `X-Content-Type-Options` y `X-Frame-Options`. Los errores de PHP nunca se
+  muestran al cliente: se registran en el log y la API responde 500 en JSON.
 
 ## Accesibilidad (WCAG 2.1)
 

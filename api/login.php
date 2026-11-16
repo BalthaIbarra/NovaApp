@@ -21,8 +21,8 @@ require_once __DIR__ . '/_ayudante.php';
 requerir_metodo('POST');
 
 $datos    = leer_json();
-$email    = trim($datos['email'] ?? '');
-$password = (string) ($datos['password'] ?? '');
+$email    = texto($datos, 'email');
+$password = texto($datos, 'password', false);
 
 if ($email === '' || $password === '') {
     error_api('Faltan el email o la contraseña.', 400);

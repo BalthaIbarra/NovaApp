@@ -74,15 +74,15 @@ function atender_get(ProductoModel $productos): void
     }
 
     if (isset($_GET['slug'])) {
-        responder_producto($productos->buscarPorSlug(trim((string) $_GET['slug'])));
+        responder_producto($productos->buscarPorSlug(texto($_GET, 'slug')));
     }
 
     if (isset($_GET['destacado'])) {
         responder_producto($productos->obtenerDestacado());
     }
 
-    $categoria = trim((string) ($_GET['categoria'] ?? ''));
-    $busqueda  = mb_substr(trim((string) ($_GET['q'] ?? '')), 0, LARGO_MAXIMO_BUSQUEDA);
+    $categoria = texto($_GET, 'categoria');
+    $busqueda  = mb_substr(texto($_GET, 'q'), 0, LARGO_MAXIMO_BUSQUEDA);
 
     if ($categoria !== '' && !array_key_exists($categoria, CATEGORIAS)) {
         error_api('La categoría pedida no existe.', 400);
@@ -190,10 +190,10 @@ function leer_id(): int
  */
 function validar_producto(array $entrada): array
 {
-    $nombre        = trim((string) ($entrada['nombre'] ?? ''));
-    $categoriaSlug = trim((string) ($entrada['categoria_slug'] ?? ''));
-    $descripcion   = trim((string) ($entrada['descripcion'] ?? ''));
-    $imagen        = trim((string) ($entrada['imagen'] ?? ''));
+    $nombre        = texto($entrada, 'nombre');
+    $categoriaSlug = texto($entrada, 'categoria_slug');
+    $descripcion   = texto($entrada, 'descripcion');
+    $imagen        = texto($entrada, 'imagen');
     $precio        = $entrada['precio'] ?? null;
     $stock         = filter_var($entrada['stock'] ?? null, FILTER_VALIDATE_INT, ['options' => ['min_range' => 0]]);
 
@@ -249,7 +249,7 @@ function validar_producto(array $entrada): array
     ];
 
     // Solo se usa en el alta; en la edición se ignora.
-    $slug = trim((string) ($entrada['slug'] ?? ''));
+    $slug = texto($entrada, 'slug');
     if ($slug !== '') {
         if (strlen($slug) > 60 || !preg_match('/^[a-z0-9]+(-[a-z0-9]+)*$/', $slug)) {
             error_api('El slug solo puede tener minúsculas, números y guiones (ej. "novaclick-pro").', 400);

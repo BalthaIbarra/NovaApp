@@ -14,3 +14,14 @@ RewriteRule ^api/_ - [F,L]
 
 # No listar el contenido de las carpetas.
 Options -Indexes
+
+# Cabeceras de seguridad (OWASP A05). La Content Security Policy solo deja
+# ejecutar scripts y estilos propios del sitio: aunque se colara un <script>
+# en algún dato, el navegador no lo ejecutaría. Las imágenes pueden venir de
+# cualquier https:// porque el admin carga URLs externas (ej. Unsplash).
+<IfModule mod_headers.c>
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set X-Frame-Options "SAMEORIGIN"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' https:; connect-src 'self'; form-action 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'self'"
+</IfModule>
