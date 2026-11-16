@@ -17,6 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
   inicializarSesion();
   inicializarBuscador();
   inicializarCheckout();
+  inicializarDetalle();
 });
 
 // Llama a un endpoint y devuelve { ok, status, datos }. Si se pasa "cuerpo",
@@ -258,18 +259,17 @@ function crearTarjeta(producto) {
   imagen.alt = producto.nombre;
   imagen.loading = 'lazy';
 
-  const enlaceCompra = `comprar.html?producto=${encodeURIComponent(producto.slug)}`;
+  const slug = encodeURIComponent(producto.slug);
+  const verDetalle = crearEnlace(`producto.html?slug=${slug}`, 'btn btn-outline', 'Ver detalle');
+  const agregar = crearEnlace(`comprar.html?producto=${slug}`, 'btn btn-primary', 'Agregar');
 
-  // Solo el destacado tiene ficha propia en producto.html por ahora.
+  // Todas las tarjetas repiten "Ver detalle" / "Agregar": el aria-label le
+  // dice al lector de pantalla de qué producto es cada enlace.
+  verDetalle.setAttribute('aria-label', `Ver detalle de ${producto.nombre}`);
+  agregar.setAttribute('aria-label', `Agregar ${producto.nombre} al pedido`);
+
   const acciones = crearElemento('div', 'card-actions');
-  if (producto.destacado) {
-    acciones.append(
-      crearEnlace('producto.html', 'btn btn-outline', 'Ver detalle'),
-      crearEnlace(enlaceCompra, 'btn btn-primary', 'Agregar')
-    );
-  } else {
-    acciones.append(crearEnlace(enlaceCompra, 'btn btn-primary btn-block', 'Agregar al carrito'));
-  }
+  acciones.append(verDetalle, agregar);
 
   const cuerpo = crearElemento('div', 'body');
   cuerpo.append(
@@ -291,8 +291,11 @@ function crearFila(producto) {
   const celdaStock = document.createElement('td');
   celdaStock.append(crearElemento('span', clasePill, `${producto.stock} unidades`));
 
+  const celdaNombre = crearElemento('td', 'name');
+  celdaNombre.append(crearEnlace(`producto.html?slug=${encodeURIComponent(producto.slug)}`, '', producto.nombre));
+
   fila.append(
-    crearElemento('td', 'name', producto.nombre),
+    celdaNombre,
     crearElemento('td', '', producto.categoria),
     crearElemento('td', 'price', formatearPrecio(producto.precio)),
     celdaStock
@@ -554,4 +557,56 @@ async function guardarValoracion(evento) {
   } catch (error) {
     mostrarFeedback(feedback, 'No se pudo guardar la valoración.', 'error');
   }
+}
+
+// Ficha de producto (CU 2): producto.html?slug=<slug>. Sin slug muestra el
+// destacado, así siguen funcionando los enlaces "Producto destacado" de la AE1.
+async function inicializarDetalle() {
+  const ficha = document.querySelector('#detalle-producto');
+  if (!ficha) return;
+
+  const estado = document.querySelector('#detalle-estado');
+  const slug = new URLSearchParams(window.location.search).get('slug');
+  const consulta = slug ? `?slug=${encodeURIComponent(slug)}` : '?destacado=1';
+
+  let producto;
+  try {
+    const { ok, datos } = await llamarApi('productos.php' + consulta);
+    if (!ok) {
+      mostrarEstado(estado, datos.mensaje, true);
+      return;
+    }
+    producto = datos.producto;
+  } catch (error) {
+    mostrarEstado(estado, 'No se pudo cargar el producto. Intentá recargar la página.', true);
+    return;
+  }
+
+  document.title = `Nova Tech — ${producto.nombre}`;
+
+  const imagen = document.querySelector('#detalle-imagen');
+  imagen.src = producto.imagen;
+  imagen.alt = `${producto.nombre} - imagen grande`;
+
+  document.querySelector('#detalle-badge').textContent = producto.destacado
+    ? `Más vendido · ${producto.categoria}`
+    : producto.categoria;
+  document.querySelector('#detalle-nombre').textContent = producto.nombre;
+  document.querySelector('#detalle-descripcion').textContent = producto.descripcion || '';
+  document.querySelector('#detalle-precio').textContent = formatearPrecio(producto.precio);
+  document.querySelector('#detalle-comprar').href = `comprar.html?producto=${encodeURIComponent(producto.slug)}`;
+
+  // Categoría primero, después las especificaciones cargadas (si tiene) y el stock.
+  const especificaciones = Object.entries(producto.especificaciones || {})
+    .filter(([clave]) => clave !== 'Categoría');
+  const filas = [['Categoría', producto.categoria], ...especificaciones, ['Stock disponible', `${producto.stock} unidades`]];
+
+  document.querySelector('#detalle-specs').replaceChildren(...filas.map(([clave, valor]) => {
+    const fila = document.createElement('tr');
+    fila.append(crearElemento('td', 'spec-key', clave), crearElemento('td', 'spec-val', valor));
+    return fila;
+  }));
+
+  mostrarEstado(estado, '');
+  ficha.hidden = false;
 }

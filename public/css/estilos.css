@@ -1365,3 +1365,15 @@ button.header-action {
   font-family: inherit;
   cursor: pointer;
 }
+
+/* En la tabla del catálogo el nombre enlaza a la ficha del producto. */
+table.catalog td.name a:hover {
+  color: var(--accent-cyan);
+  text-decoration: underline;
+}
+
+/* Que el atributo hidden siempre oculte, aunque la clase defina display
+   (ej. .product-detail usa display: grid y si no le ganaría a hidden). */
+[hidden] {
+  display: none !important;
+}

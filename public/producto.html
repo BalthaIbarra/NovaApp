@@ -49,62 +49,27 @@
 
   <main class="page-shell">
 
-    <!-- Ficha del producto destacado: es el unico producto con pagina de detalle propia -->
-    <article class="product-detail">
+    <!-- Ficha de producto: producto.html?slug=<slug>, o el destacado si no hay slug.
+         app.js la completa con los datos de /api/productos.php. -->
+    <p id="detalle-estado" class="catalogo-estado" role="status" aria-live="polite">Cargando producto...</p>
+
+    <article class="product-detail" id="detalle-producto" hidden>
 
       <figure class="gallery">
-        <img src="https://images.unsplash.com/photo-1585298723682-7115561c51b7?w=800&q=80&auto=format&fit=crop" alt="Auriculares Bluetooth NovaSound X1 - imagen grande">
+        <img id="detalle-imagen" alt="">
       </figure>
 
       <div>
-        <span class="badge">Más vendido · Audio</span>
-        <h1>Auriculares Bluetooth NovaSound X1</h1>
-        <p>
-          Los NovaSound X1 combinan cancelación de ruido activa de doble micrófono,
-          drivers de 40mm de neodimio y una estructura plegable de aluminio cepillado.
-          Pensados para sesiones largas de trabajo, estudio o gaming, con un ajuste
-          acolchado en memory foam y controles táctiles en el auricular derecho.
-        </p>
-        <div class="price">$ 45.999</div>
+        <span class="badge" id="detalle-badge"></span>
+        <h1 id="detalle-nombre"></h1>
+        <p id="detalle-descripcion"></p>
+        <div class="price" id="detalle-precio"></div>
 
         <table class="spec-table">
-          <tbody>
-            <tr>
-              <td class="spec-key">Categoría</td>
-              <td class="spec-val">Audio</td>
-            </tr>
-            <tr>
-              <td class="spec-key">Conectividad</td>
-              <td class="spec-val">Bluetooth 5.3 + entrada Jack 3.5mm</td>
-            </tr>
-            <tr>
-              <td class="spec-key">Batería</td>
-              <td class="spec-val">Hasta 40 horas (ANC apagado) / 28 horas (ANC activo)</td>
-            </tr>
-            <tr>
-              <td class="spec-key">Cancelación de ruido</td>
-              <td class="spec-val">Activa (ANC), doble micrófono</td>
-            </tr>
-            <tr>
-              <td class="spec-key">Drivers</td>
-              <td class="spec-val">40mm de neodimio</td>
-            </tr>
-            <tr>
-              <td class="spec-key">Peso</td>
-              <td class="spec-val">254 g</td>
-            </tr>
-            <tr>
-              <td class="spec-key">Color</td>
-              <td class="spec-val">Negro grafito</td>
-            </tr>
-            <tr>
-              <td class="spec-key">Stock disponible</td>
-              <td class="spec-val">25 unidades</td>
-            </tr>
-          </tbody>
+          <tbody id="detalle-specs"></tbody>
         </table>
 
-        <a href="comprar.html" class="btn btn-primary btn-block">Comprar este producto</a>
+        <a href="comprar.html" id="detalle-comprar" class="btn btn-primary btn-block">Comprar este producto</a>
       </div>
 
     </article>
@@ -116,7 +81,7 @@
     <span class="accent">NOVA TECH</span> · Accesorios tecnológicos para tu día a día
   </footer>
 
-  <!-- JS del sitio (Entrega 2): buscador del header (ver app.js) -->
+  <!-- JS del sitio: ficha de producto desde la API y buscador del header (ver app.js) -->
   <script src="js/app.js" defer></script>
 
 </body>
