@@ -1254,14 +1254,14 @@ fieldset legend {
   }
 }
 
+/* Aparición al scrollear (AE1). Solo en tarjetas: los bloques principales
+   (formularios, ficha de producto) no se animan porque, mientras están
+   semitransparentes, su texto no llega al contraste mínimo (Lighthouse). */
 @supports (animation-timeline: view()) {
   .stat-box,
   .featured-card,
   .promo-banner,
-  .product-card,
-  .product-detail,
-  .form-shell,
-  .login-shell {
+  .product-card {
     opacity: 0;
     animation: reveal-card linear both;
     animation-timeline: view();
@@ -1277,6 +1277,17 @@ fieldset legend {
       opacity: 1;
       transform: translateY(0);
     }
+  }
+}
+
+/* Si el usuario pidió reducir el movimiento en su sistema, no se anima nada. */
+@media (prefers-reduced-motion: reduce) {
+  .stat-box,
+  .featured-card,
+  .promo-banner,
+  .product-card {
+    animation: none;
+    opacity: 1;
   }
 }
 
