@@ -1342,3 +1342,15 @@ fieldset legend {
     border-color: #999999;
   }
 }
+
+/* Estado del catálogo (AE4): cantidad de resultados o error del fetch.
+   Es una región aria-live, así que también lo anuncia el lector de pantalla. */
+.catalogo-estado {
+  margin: 0 0 16px;
+  font-size: 0.86rem;
+  color: var(--text-secondary);
+}
+
+.catalogo-estado.error {
+  color: #ff8f8f;
+}

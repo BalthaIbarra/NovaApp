@@ -92,9 +92,13 @@ function mostrarFeedback(elemento, mensaje, tipo) {
   elemento.className = 'form-feedback ' + tipo;
 }
 
-// Opción 3 — Buscador y Filtro de Catálogo en Tiempo Real.
-// Carga el catálogo con fetch(), filtra en memoria con .filter() e inyecta
-// el resultado en el DOM. En páginas sin catálogo, el buscador redirige.
+// Catálogo real (AE4): los productos salen de MySQL a través de la API,
+// ya no de data/productos.json. Se piden una sola vez y el buscador
+// filtra en memoria mientras se escribe, sin volver a llamar al servidor.
+// En páginas sin catálogo, el buscador redirige al listado.
+const URL_API_PRODUCTOS = '../api/productos.php';
+const UMBRAL_STOCK_BAJO = 12;
+
 let catalogoCompleto = [];
 
 async function inicializarBuscador() {
@@ -103,6 +107,7 @@ async function inicializarBuscador() {
 
   const grilla = document.querySelector('.product-grid');
   const cuerpoTabla = document.querySelector('table.catalog tbody');
+  const estado = document.querySelector('#catalogo-estado');
   const hayCatalogoEnEstaPagina = grilla || cuerpoTabla;
 
   if (!hayCatalogoEnEstaPagina) {
@@ -117,77 +122,120 @@ async function inicializarBuscador() {
   try {
     catalogoCompleto = await obtenerProductos();
   } catch (error) {
-    mostrarErrorCatalogo(grilla, cuerpoTabla);
+    mostrarEstado(estado, 'No se pudo cargar el catálogo. Intentá recargar la página.', true);
     return;
   }
 
   const parametros = new URLSearchParams(window.location.search);
   const terminoInicial = parametros.get('q') || '';
   input.value = terminoInicial;
-  filtrarYRenderizar(terminoInicial, grilla, cuerpoTabla);
+  filtrarYRenderizar(terminoInicial, grilla, cuerpoTabla, estado);
 
   input.addEventListener('input', () => {
-    filtrarYRenderizar(input.value, grilla, cuerpoTabla);
+    filtrarYRenderizar(input.value, grilla, cuerpoTabla, estado);
   });
 }
 
 async function obtenerProductos() {
-  const respuesta = await fetch('data/productos.json');
-  if (!respuesta.ok) {
-    throw new Error(`Respuesta HTTP ${respuesta.status}`);
+  const respuesta = await fetch(URL_API_PRODUCTOS);
+  const datos = await respuesta.json();
+
+  if (!respuesta.ok || !datos.exito) {
+    throw new Error(datos.mensaje || `Respuesta HTTP ${respuesta.status}`);
   }
-  return respuesta.json();
+  return datos.productos;
 }
 
-function mostrarErrorCatalogo(grilla, cuerpoTabla) {
-  const mensaje = '<p class="form-feedback error">No se pudo cargar el catálogo. Intentá recargar la página.</p>';
-  if (grilla) grilla.innerHTML = mensaje;
-  if (cuerpoTabla) cuerpoTabla.innerHTML = `<tr><td colspan="4">${mensaje}</td></tr>`;
-}
-
-function filtrarYRenderizar(termino, grilla, cuerpoTabla) {
+function filtrarYRenderizar(termino, grilla, cuerpoTabla, estado) {
   const texto = termino.trim().toLowerCase();
   const filtrados = catalogoCompleto.filter((producto) =>
     producto.nombre.toLowerCase().includes(texto)
   );
-  renderizarCatalogo(filtrados, grilla, cuerpoTabla);
+
+  if (grilla) grilla.replaceChildren(...filtrados.map(crearTarjeta));
+  if (cuerpoTabla) cuerpoTabla.replaceChildren(...filtrados.map(crearFila));
+
+  if (texto === '') {
+    mostrarEstado(estado, `Catálogo cargado: ${filtrados.length} productos.`);
+  } else if (filtrados.length === 0) {
+    mostrarEstado(estado, `No encontramos productos para "${termino.trim()}".`);
+  } else {
+    mostrarEstado(estado, `${filtrados.length} resultado(s) para "${termino.trim()}".`);
+  }
 }
 
-function renderizarCatalogo(productos, grilla, cuerpoTabla) {
-  if (grilla) grilla.innerHTML = productos.map(tarjetaHTML).join('');
-  if (cuerpoTabla) cuerpoTabla.innerHTML = productos.map(filaHTML).join('');
+// La región #catalogo-estado tiene aria-live="polite": el lector de
+// pantalla anuncia cada cambio sin tener que leer todas las tarjetas.
+function mostrarEstado(estado, mensaje, esError = false) {
+  if (!estado) return;
+  estado.textContent = mensaje;
+  estado.classList.toggle('error', esError);
 }
 
-function tarjetaHTML(producto) {
-  const botonDetalle = producto.detalle
-    ? '<a href="producto.html" class="btn btn-outline">Ver detalle</a>'
-    : '';
-  const botonAgregar = producto.detalle
-    ? '<a href="comprar.html" class="btn btn-primary">Agregar</a>'
-    : '<a href="comprar.html" class="btn btn-primary btn-block">Agregar al carrito</a>';
-
-  return `
-    <article class="product-card cat-${producto.categoriaSlug}">
-      <img src="${producto.imagen}" alt="${producto.nombre}">
-      <div class="body">
-        <div class="category">${producto.categoria}</div>
-        <h2>${producto.nombre}</h2>
-        <div class="price small">${producto.precioTexto}</div>
-        <div class="stock">Stock: ${producto.stock} unidades</div>
-        <div class="card-actions">${botonDetalle}${botonAgregar}</div>
-      </div>
-    </article>
-  `;
+function formatearPrecio(precio) {
+  return '$ ' + precio.toLocaleString('es-AR', { maximumFractionDigits: 2 });
 }
 
-function filaHTML(producto) {
-  const clasePill = producto.stockBajo ? 'stock-pill low' : 'stock-pill';
-  return `
-    <tr class="cat-row cat-${producto.categoriaSlug}">
-      <td class="name">${producto.nombre}</td>
-      <td>${producto.categoria}</td>
-      <td class="price">${producto.precioTexto}</td>
-      <td><span class="${clasePill}">${producto.stock} unidades</span></td>
-    </tr>
-  `;
+// Crea un elemento con clase y texto. Todo dato de la base entra por
+// textContent (nunca innerHTML), así un nombre con "<script>" se muestra
+// como texto y no se ejecuta (mitigación de XSS, OWASP A03).
+function crearElemento(etiqueta, clase, texto) {
+  const elemento = document.createElement(etiqueta);
+  if (clase) elemento.className = clase;
+  if (texto !== undefined) elemento.textContent = texto;
+  return elemento;
+}
+
+function crearEnlace(href, clase, texto) {
+  const enlace = crearElemento('a', clase, texto);
+  enlace.href = href;
+  return enlace;
+}
+
+function crearTarjeta(producto) {
+  const tarjeta = crearElemento('article', `product-card cat-${producto.categoria_slug}`);
+
+  const imagen = document.createElement('img');
+  imagen.src = producto.imagen;
+  imagen.alt = producto.nombre;
+  imagen.loading = 'lazy';
+
+  // Solo el destacado tiene ficha propia en producto.html por ahora.
+  const acciones = crearElemento('div', 'card-actions');
+  if (producto.destacado) {
+    acciones.append(
+      crearEnlace('producto.html', 'btn btn-outline', 'Ver detalle'),
+      crearEnlace('comprar.html', 'btn btn-primary', 'Agregar')
+    );
+  } else {
+    acciones.append(crearEnlace('comprar.html', 'btn btn-primary btn-block', 'Agregar al carrito'));
+  }
+
+  const cuerpo = crearElemento('div', 'body');
+  cuerpo.append(
+    crearElemento('div', 'category', producto.categoria),
+    crearElemento('h2', '', producto.nombre),
+    crearElemento('div', 'price small', formatearPrecio(producto.precio)),
+    crearElemento('div', 'stock', `Stock: ${producto.stock} unidades`),
+    acciones
+  );
+
+  tarjeta.append(imagen, cuerpo);
+  return tarjeta;
+}
+
+function crearFila(producto) {
+  const fila = crearElemento('tr', `cat-row cat-${producto.categoria_slug}`);
+  const clasePill = producto.stock <= UMBRAL_STOCK_BAJO ? 'stock-pill low' : 'stock-pill';
+
+  const celdaStock = document.createElement('td');
+  celdaStock.append(crearElemento('span', clasePill, `${producto.stock} unidades`));
+
+  fila.append(
+    crearElemento('td', 'name', producto.nombre),
+    crearElemento('td', '', producto.categoria),
+    crearElemento('td', 'price', formatearPrecio(producto.precio)),
+    celdaStock
+  );
+  return fila;
 }
