@@ -1,0 +1,16 @@
+# Solo /public (la SPA) y /api (los endpoints) se sirven por HTTP.
+# Sin esto, cualquiera podía descargar sql/schema.sql (con los hashes de
+# las contraseñas) o el historial de .git desde el navegador.
+
+RewriteEngine On
+
+# La raíz del proyecto lleva directo a la SPA. Se arma desde la URL pedida
+# (REQUEST_URI) porque una ruta relativa acá Apache la completa con la del disco.
+RewriteRule ^$ %{REQUEST_URI}public/ [R=302,L]
+
+# 403 para carpetas internas y archivos de ayuda de la API (api/_*.php).
+RewriteRule ^(config|models|sql|\.git)(/|$) - [F,L]
+RewriteRule ^api/_ - [F,L]
+
+# No listar el contenido de las carpetas.
+Options -Indexes
