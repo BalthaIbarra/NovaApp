@@ -1354,3 +1354,11 @@ fieldset legend {
 .catalogo-estado.error {
   color: #ff8f8f;
 }
+
+/* "Cerrar sesión" es un <button> (es una acción, no navega): se le quitan
+   los estilos por defecto para que se vea igual que los enlaces del header. */
+button.header-action {
+  background: none;
+  font-family: inherit;
+  cursor: pointer;
+}

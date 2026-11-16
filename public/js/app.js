@@ -1,6 +1,10 @@
-// Opción 4 — Módulo de Registro y Autenticación de Usuarios (Entrega 2).
+// Login, registro y sesión reales (AE4). Reemplaza al login simulado de la
+// Entrega 2, que bajaba data/usuarios.json y comparaba la contraseña en el
+// navegador. Ahora la contraseña viaja solo al servidor (api/login.php), que
+// la verifica con password_verify(), y la sesión vive en la cookie PHPSESSID.
 // Desacoplado: sin onclick/onsubmit en el HTML, todo se conecta acá vía addEventListener.
 
+const URL_API = '../api/';
 const LONGITUD_MINIMA_CLAVE = 8;
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -10,8 +14,57 @@ document.addEventListener('DOMContentLoaded', () => {
   const formRegistro = document.querySelector('#registroForm');
   if (formRegistro) formRegistro.addEventListener('submit', manejarEnvioRegistro);
 
+  inicializarSesion();
   inicializarBuscador();
 });
+
+// Llama a un endpoint y devuelve { ok, datos }. Si se pasa "cuerpo", va
+// como JSON por POST. Los errores de red se tiran para que los maneje quien llama.
+async function llamarApi(endpoint, cuerpo) {
+  const opciones = cuerpo === undefined
+    ? {}
+    : { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(cuerpo) };
+
+  const respuesta = await fetch(URL_API + endpoint, opciones);
+  const datos = await respuesta.json();
+  return { ok: respuesta.ok, datos };
+}
+
+// Header: si hay sesión, "Iniciar sesión" se cambia por el nombre del
+// usuario y un botón para cerrarla. Lo decide el servidor (api/yo.php).
+async function inicializarSesion() {
+  const enlaceLogin = document.querySelector('.header-actions a[href="login.html"]');
+  if (!enlaceLogin) return;
+
+  let usuario = null;
+  try {
+    const { ok, datos } = await llamarApi('yo.php');
+    if (ok) usuario = datos.usuario;
+  } catch (error) {
+    return; // sin conexión con la API se deja el header como está
+  }
+  if (!usuario) return;
+
+  const nombre = document.createElement('span');
+  nombre.className = 'header-action';
+  nombre.textContent = `👤 ${usuario.nombre}`;
+
+  const botonSalir = document.createElement('button');
+  botonSalir.type = 'button';
+  botonSalir.className = 'header-action';
+  botonSalir.textContent = 'Cerrar sesión';
+  botonSalir.addEventListener('click', cerrarSesion);
+
+  enlaceLogin.replaceWith(nombre, botonSalir);
+}
+
+async function cerrarSesion() {
+  try {
+    await llamarApi('logout.php', {});
+  } finally {
+    window.location.href = 'index.html';
+  }
+}
 
 async function manejarEnvioLogin(evento) {
   evento.preventDefault();
@@ -23,32 +76,32 @@ async function manejarEnvioLogin(evento) {
   mostrarFeedback(feedback, 'Verificando credenciales...', 'pendiente');
 
   try {
-    const usuarios = await obtenerUsuarios();
-    const usuarioValido = usuarios.find(
-      (usuario) => usuario.email === email && usuario.password === clave
-    );
+    const { ok, datos } = await llamarApi('login.php', { email, password: clave });
 
-    if (usuarioValido) {
-      mostrarFeedback(feedback, `¡Bienvenida/o, ${usuarioValido.nombre}! Redirigiendo a la compra...`, 'exito');
-      setTimeout(() => {
-        window.location.href = 'comprar.html';
-      }, 1200);
-    } else {
-      mostrarFeedback(feedback, 'Email o contraseña incorrectos.', 'error');
+    if (!ok) {
+      mostrarFeedback(feedback, datos.mensaje, 'error');
+      return;
     }
+
+    mostrarFeedback(feedback, `¡Bienvenida/o, ${datos.usuario.nombre}! Redirigiendo a la compra...`, 'exito');
+    setTimeout(() => {
+      window.location.href = 'comprar.html';
+    }, 1200);
   } catch (error) {
-    mostrarFeedback(feedback, 'No se pudo verificar el usuario. Intentá nuevamente.', 'error');
+    mostrarFeedback(feedback, 'No se pudo conectar con el servidor. Intentá nuevamente.', 'error');
   }
 }
 
 async function manejarEnvioRegistro(evento) {
   evento.preventDefault();
 
+  const nombre = document.querySelector('#registro_nombre').value.trim();
   const email = document.querySelector('#registro_email').value.trim();
   const clave = document.querySelector('#registro_password').value;
   const claveConfirmacion = document.querySelector('#registro_password_confirm').value;
   const feedback = document.querySelector('#registro-feedback');
 
+  // Validación rápida para no esperar al servidor; api/registro.php la repite.
   if (clave.length < LONGITUD_MINIMA_CLAVE) {
     mostrarFeedback(feedback, `La contraseña debe tener al menos ${LONGITUD_MINIMA_CLAVE} caracteres.`, 'error');
     return;
@@ -62,11 +115,15 @@ async function manejarEnvioRegistro(evento) {
   mostrarFeedback(feedback, 'Creando cuenta...', 'pendiente');
 
   try {
-    const usuarios = await obtenerUsuarios();
-    const yaExiste = usuarios.some((usuario) => usuario.email === email);
+    const { ok, datos } = await llamarApi('registro.php', {
+      nombre,
+      email,
+      password: clave,
+      password_confirm: claveConfirmacion,
+    });
 
-    if (yaExiste) {
-      mostrarFeedback(feedback, 'Ya existe una cuenta registrada con ese email.', 'error');
+    if (!ok) {
+      mostrarFeedback(feedback, datos.mensaje, 'error');
       return;
     }
 
@@ -75,16 +132,8 @@ async function manejarEnvioRegistro(evento) {
       window.location.href = 'login.html';
     }, 1200);
   } catch (error) {
-    mostrarFeedback(feedback, 'No se pudo crear la cuenta. Intentá nuevamente.', 'error');
+    mostrarFeedback(feedback, 'No se pudo conectar con el servidor. Intentá nuevamente.', 'error');
   }
-}
-
-async function obtenerUsuarios() {
-  const respuesta = await fetch('data/usuarios.json');
-  if (!respuesta.ok) {
-    throw new Error(`Respuesta HTTP ${respuesta.status}`);
-  }
-  return respuesta.json();
 }
 
 function mostrarFeedback(elemento, mensaje, tipo) {

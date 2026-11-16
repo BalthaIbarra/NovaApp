@@ -61,7 +61,7 @@
           Ingresá tus datos para continuar.
         </p>
 
-        <!-- Login: valida contra data/usuarios.json vía fetch (app.js), sin campo de confirmacion -->
+        <!-- Login: valida en el servidor (api/login.php) vía fetch desde app.js -->
         <form id="loginForm">
           <div class="form-field full">
             <label for="login_email">Email</label>
@@ -95,6 +95,11 @@
 
         <!-- Registro: aca si se pide confirmar contraseña (coincidencia + longitud minima) -->
         <form id="registroForm">
+          <div class="form-field full">
+            <label for="registro_nombre">Nombre</label>
+            <input type="text" id="registro_nombre" name="registro_nombre" autocomplete="name" maxlength="120" required>
+          </div>
+
           <div class="form-field full">
             <label for="registro_email">Email</label>
             <input type="email" id="registro_email" name="registro_email" placeholder="nombre@correo.com" required>
