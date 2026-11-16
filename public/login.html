@@ -8,6 +8,9 @@
 </head>
 <body>
 
+  <!-- Primer elemento enfocable: permite saltear el header con el teclado -->
+  <a class="skip-link" href="#contenido">Saltar al contenido principal</a>
+
   <!-- Encabezado: barra de utilidad, marca, buscador y navegacion (igual en las 6 paginas) -->
   <header class="site-header">
     <div class="utility-bar">
@@ -21,9 +24,9 @@
           <span class="brand-mark">N</span>
           NOVA <span class="accent">TECH</span>
         </a>
-        <div class="search-bar">
-          <span class="search-icon">🔍</span>
-          <input type="text" placeholder="Buscar auriculares, teclados, cargadores...">
+        <div class="search-bar" role="search">
+          <span class="search-icon" aria-hidden="true">🔍</span>
+          <input type="search" id="buscador" name="q" aria-label="Buscar productos" placeholder="Buscar auriculares, teclados, cargadores...">
         </div>
         <div class="header-actions">
           <a href="login.html" class="header-action">👤 Iniciar sesión</a>
@@ -47,7 +50,7 @@
     </nav>
   </header>
 
-  <main class="page-shell">
+  <main class="page-shell" id="contenido" tabindex="-1">
 
     <!-- Acceso/registro: alterna vista sin JS via :target (mismo patron que los modales de comprar.html) -->
     <span id="registro"></span>

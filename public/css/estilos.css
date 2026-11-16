@@ -13,7 +13,7 @@
 
   --text-primary: #f1f2f7;
   --text-secondary: #9a9dbd;
-  --text-muted: #666b8a;
+  --text-muted: #8589a8; /* AE4: antes #666b8a, no llegaba al contraste 4.5:1 de WCAG AA */
 
   --accent-violet: #7c5cff;
   --accent-violet-dim: #5a41c9;
@@ -1376,4 +1376,52 @@ table.catalog td.name a:hover {
    (ej. .product-detail usa display: grid y si no le ganaría a hidden). */
 [hidden] {
   display: none !important;
+}
+
+/* ============================================================
+   Accesibilidad (AE4): foco visible con teclado
+   ============================================================ */
+
+/* :focus-visible marca el foco solo cuando se navega con teclado (Tab),
+   no al hacer clic con el mouse. */
+:focus-visible {
+  outline: 2px solid var(--accent-cyan);
+  outline-offset: 3px;
+}
+
+/* El input del buscador no tiene borde propio: se marca la caja entera. */
+.search-bar:focus-within {
+  border-color: var(--accent-cyan);
+  box-shadow: var(--glow-cyan);
+}
+
+/* Los radios de la valoración están ocultos (opacity: 0); el foco se
+   muestra en su etiqueta, que es el cuadradito con el número. */
+.rating-group input[type="radio"]:focus-visible + label {
+  outline: 2px solid var(--accent-cyan);
+  outline-offset: 3px;
+}
+
+/* El <main> recibe el foco desde el skip link, pero no necesita contorno. */
+main:focus {
+  outline: none;
+}
+
+/* Enlace para saltear el header: invisible hasta que recibe el foco. */
+.skip-link {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 500;
+  padding: 10px 16px;
+  border-radius: var(--radius-sm);
+  background: var(--gradient-accent);
+  color: #06070a;
+  font-weight: 600;
+  transform: translateY(-200%);
+  transition: transform 0.15s ease;
+}
+
+.skip-link:focus {
+  transform: translateY(0);
 }

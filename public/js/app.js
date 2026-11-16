@@ -343,6 +343,18 @@ async function inicializarCheckout() {
     history.replaceState(null, '', window.location.pathname + window.location.search);
   }
 
+  // Escape cierra el modal abierto, igual que "Cancelar" / "Cerrar".
+  const hayModalAbierto = () => ['#confirmar-pedido', '#pedido-confirmado'].includes(window.location.hash);
+  document.addEventListener('keydown', (evento) => {
+    if (evento.key === 'Escape' && hayModalAbierto()) window.location.hash = '';
+  });
+
+  // Al cerrarse un modal, el foco quedaría en un elemento oculto: vuelve a "Finalizar pedido".
+  window.addEventListener('hashchange', () => {
+    const focoPerdido = document.activeElement === document.body || document.activeElement.closest('.modal-overlay');
+    if (!hayModalAbierto() && focoPerdido) document.querySelector('#btn-finalizar').focus();
+  });
+
   const slugInicial = new URLSearchParams(window.location.search).get('producto');
   await cargarProductosCheckout(slugInicial);
 }
