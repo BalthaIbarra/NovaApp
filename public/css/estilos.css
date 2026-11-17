@@ -1221,6 +1221,26 @@ fieldset legend {
 }
 
 @media (max-width: 520px) {
+  /* Con sesión iniciada hay tres botones (usuario, cerrar sesión, carrito):
+     en celular pasan a una segunda línea en vez de salirse de la pantalla. */
+  .header-actions {
+    flex-shrink: 1;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  /* El menú desplegable ocupa lugar aunque esté oculto: más angosto, no
+     asoma por la derecha en pantallas de 360 px. */
+  .nav-item .dropdown-menu {
+    min-width: 160px;
+  }
+  /* Los fieldset y los campos tienen un ancho mínimo por defecto que, en
+     pantallas de 320 px, empujaba el formulario de compra fuera de la pantalla. */
+  fieldset,
+  .form-grid > .form-field,
+  .form-field input,
+  .form-field select {
+    min-width: 0;
+  }
   .promo-banner .promo-text {
     padding: 28px 24px;
   }

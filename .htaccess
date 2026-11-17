@@ -25,3 +25,12 @@ Options -Indexes
   Header always set Referrer-Policy "strict-origin-when-cross-origin"
   Header always set Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' https:; connect-src 'self'; form-action 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'self'"
 </IfModule>
+
+# Que el navegador siempre consulte si hay una versión nueva del HTML, el CSS
+# y el JS (si no cambió, Apache responde 304 y usa la copia guardada). Sin
+# esto, Chrome podía seguir usando un app.js viejo después de actualizar.
+<IfModule mod_headers.c>
+  <FilesMatch "\.(html|css|js)$">
+    Header set Cache-Control "no-cache"
+  </FilesMatch>
+</IfModule>
